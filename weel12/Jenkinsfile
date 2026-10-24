@@ -1,8 +1,8 @@
+
 pipeline {
     agent any
 
     stages {
-
         stage('Checkout SCM') {
             steps {
                 checkout scm
@@ -10,35 +10,42 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-    steps {
-        bat '"C:\\Users\\ranji\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pip install -r requirements.txt'
-    
-           }
+            steps {
+                dir('weel12') {
+                    bat '"C:\\Users\\ranji\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pip install -r requirements.txt'
+                }
+            }
         }
 
         stage('Run Flask Application') {
             steps {
-                bat 'start /B python app.py'
-                bat 'timeout /t 5 /nobreak >NUL'
+                dir('weel12') {
+                    bat 'start /B "FlaskApp" "C:\\Users\\ranji\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" app.py'
+                    bat 'timeout /t 5 /nobreak >NUL'
+                }
             }
         }
 
         stage('Run Selenium Tests') {
             steps {
-                bat 'python -m pytest -v tests --junitxml=test-results.xml'
+                dir('weel12') {
+                    bat '"C:\\Users\\ranji\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pytest -v tests --junitxml=test-results.xml'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t week12-flask:latest .'
+                dir('weel12') {
+                    bat 'docker build -t week12-flask:latest .'
+                }
             }
         }
     }
 
     post {
         always {
-            junit testResults: 'test-results.xml',
+            junit testResults: 'weel12/test-results.xml',
                   allowEmptyResults: true
         }
 
@@ -51,3 +58,4 @@ pipeline {
         }
     }
 }
+
