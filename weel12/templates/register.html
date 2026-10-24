@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+
+    <script>
+        function validateForm() {
+            let name = document.getElementById("name").value.trim();
+            let password = document.getElementById("password").value;
+
+            if (name === "") {
+                alert("Username cannot be empty");
+                return false;
+            }
+
+            if (password === "") {
+                alert("Password cannot be empty");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+
+    <h1>Registration Form</h1>
+
+    {% if error %}
+        <p id="error">{{ error }}</p>
+    {% endif %}
+
+    <form action="/register" method="post"
+          onsubmit="return validateForm();">
+
+        <label for="name">Username:</label>
+        <input type="text" id="name" name="name">
+        <br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        <br><br>
+
+        <button type="submit" id="submit">Register</button>
+
+    </form>
+
+</body>
+</html>
