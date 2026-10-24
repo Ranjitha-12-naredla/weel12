@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHON = 'C:\\Users\\ranji\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
@@ -12,7 +16,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('weel12') {
-                    bat '"C:\\Users\\ranji\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pip install -r requirements.txt'
+                    bat '"%PYTHON%" -m pip install -r requirements.txt'
                 }
             }
         }
@@ -20,8 +24,10 @@ pipeline {
         stage('Run Flask Application') {
             steps {
                 dir('weel12') {
-                    bat 'start /B "FlaskApp" "C:\\Users\\ranji\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" app.py'
-                    bat 'timeout /t 5 /nobreak >NUL'
+                    bat '''
+                        start "FlaskApp" /B "%PYTHON%" app.py
+                        ping 127.0.0.1 -n 6 > nul
+                    '''
                 }
             }
         }
@@ -29,7 +35,7 @@ pipeline {
         stage('Run Selenium Tests') {
             steps {
                 dir('weel12') {
-                    bat '"C:\\Users\\ranji\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pytest -v tests --junitxml=test-results.xml'
+                    bat '"%PYTHON%" -m pytest -v tests --junitxml=test-results.xml'
                 }
             }
         }
@@ -50,11 +56,11 @@ pipeline {
         }
 
         success {
-            echo 'CI pipeline completed successfully!'
+            echo 'Week 12 CI pipeline completed successfully!'
         }
 
         failure {
-            echo 'Pipeline failed. Check Console Output.'
+            echo 'Pipeline failed. Check Console Output for the error.'
         }
     }
 }
